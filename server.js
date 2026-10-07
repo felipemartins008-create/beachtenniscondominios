@@ -126,9 +126,13 @@ app.get('/:slug', (req, res, next) => {
   res.send(html);
 });
 
-app.listen(PORT, () => {
-  console.log(`\n=================================================`);
-  console.log(`🎾 Painel de Links de Beach Tennis rodando em:`);
-  console.log(`   http://localhost:${PORT}`);
-  console.log(`=================================================\n`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n=================================================`);
+    console.log(`🎾 Painel de Links de Beach Tennis rodando em:`);
+    console.log(`   http://localhost:${PORT}`);
+    console.log(`=================================================\n`);
+  });
+}
+
+module.exports = app;
