@@ -397,7 +397,7 @@
     <div class="grid">
       <!-- Formulário: Adicionar Novo Condomínio -->
       <div class="card">
-        <div class="card-title">
+        <div class="card-title" id="formCardTitle">
           <span>➕</span> Cadastrar Novo Condomínio
         </div>
 
@@ -425,14 +425,19 @@
           <div class="form-group">
             <label>🖼️ Imagem de Capa com Headline (Opcional - Canva 1:1 Quadrado)</label>
             <input type="file" id="imagemFile" accept="image/*" />
-            <small style="color: #64748b; font-size: 11.5px; margin-top: 4px; display: block;">
+            <small style="color: #64748b; font-size: 11.5px; margin-top: 4px; display: block;" id="imagemDica">
               💡 Dica: Suba sua arte do Canva no formato Quadrado (1:1). Se não escolher nenhuma imagem, usamos a foto padrão de Beach Tennis.
             </small>
           </div>
 
-          <button type="submit" class="btn btn-primary" id="btnSalvar">
-            <span>✨ Criar Link de Divulgação</span>
-          </button>
+          <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary" id="btnSalvar" style="flex: 1;">
+              <span>✨ Criar Link de Divulgação</span>
+            </button>
+            <button type="button" class="btn btn-outline" id="btnCancelarEdicao" style="display: none;" onclick="cancelarEdicao()">
+              ✖️ Cancelar
+            </button>
+          </div>
         </form>
       </div>
 
@@ -506,6 +511,12 @@
     const condosList = document.getElementById('condosList');
     const condoCount = document.getElementById('condoCount');
     const toast = document.getElementById('toast');
+    let editingCondoId = null;
+    let editingBannerUrl = null;
+    const formCardTitle = document.getElementById('formCardTitle');
+    const btnSalvar = document.getElementById('btnSalvar');
+    const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
+    const imagemDica = document.getElementById('imagemDica');
 
     // Simulator Elements
     const nomeInput = document.getElementById('nome');
@@ -594,7 +605,14 @@
                   <div class="condo-meta">📍 ${c.cidade} • ${c.quadra}</div>
                 </div>
               </div>
-              <button class="btn btn-sm btn-delete" onclick="deletarCondominio('${c.id}')">Excluir</button>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline" style="border-color: #38bdf8; color: #38bdf8;" onclick="editarCondominio('${c.id}')">
+                  ✏️ Editar
+                </button>
+                <button class="btn btn-sm btn-delete" onclick="deletarCondominio('${c.id}')">
+                  Excluir
+                </button>
+              </div>
             </div>
 
             <div class="link-row">
@@ -698,6 +716,59 @@
       renderCondominios();
     };
 
+    window.editarCondominio = function(id) {
+      const localCondos = JSON.parse(localStorage.getItem('beach_condos_custom') || '[]');
+      const deletedIds = JSON.parse(localStorage.getItem('beach_deleted_ids') || '[]');
+      const allCondos = [...localCondos, ...condominios].filter(c => !deletedIds.includes(String(c.id)));
+
+      const condo = allCondos.find(c => String(c.id) === String(id));
+      if (!condo) return;
+
+      editingCondoId = String(id);
+      editingBannerUrl = condo.bannerUrl || null;
+      currentImageBase64 = null;
+
+      document.getElementById('nome').value = condo.nome || '';
+      document.getElementById('whatsappLink').value = condo.whatsappLink || '';
+      document.getElementById('cidade').value = condo.cidade === 'Condomínio' ? '' : (condo.cidade || '');
+      document.getElementById('quadra').value = (condo.quadra === 'Quadra de Areia' || condo.quadra === 'Quadra de Areia / Beach Tennis') ? '' : (condo.quadra || '');
+      document.getElementById('imagemFile').value = '';
+
+      if (editingBannerUrl) {
+        simImage.src = editingBannerUrl;
+        if (imagemDica) {
+          imagemDica.innerHTML = `🖼️ <strong>Foto atual mantida!</strong> Se quiser trocar a arte, selecione um novo arquivo acima.`;
+        }
+      }
+
+      simTitle.textContent = `🎾 Beach Tennis no ${condo.nome} | Agendamento`;
+      const slug = (condo.nome || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      simUrl.textContent = `${config.baseUrl ? config.baseUrl.replace(/^https?:\/\//, '') : 'seusite.com'}/${slug}`;
+
+      formCardTitle.innerHTML = `<span>✏️</span> Editando: ${condo.nome}`;
+      btnSalvar.innerHTML = `<span>💾 Salvar Alterações</span>`;
+      btnCancelarEdicao.style.display = 'inline-flex';
+
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('nome').focus();
+    };
+
+    window.cancelarEdicao = function() {
+      editingCondoId = null;
+      editingBannerUrl = null;
+      currentImageBase64 = null;
+      form.reset();
+      formCardTitle.innerHTML = `<span>➕</span> Cadastrar Novo Condomínio`;
+      btnSalvar.innerHTML = `<span>✨ Criar Link de Divulgação</span>`;
+      btnCancelarEdicao.style.display = 'none';
+      if (imagemDica) {
+        imagemDica.innerHTML = `💡 Dica: Suba sua arte do Canva no formato Quadrado (1:1). Se não escolher nenhuma imagem, usamos a foto padrão de Beach Tennis.`;
+      }
+      simImage.src = '/assets/banner-beach-tennis.jpg';
+      simTitle.textContent = `🎾 Beach Tennis no Condomínio | Agendamento`;
+      simUrl.textContent = `seusite.com/condominio`;
+    };
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -705,16 +776,15 @@
       const whatsappLink = document.getElementById('whatsappLink').value.trim();
       const cidade = document.getElementById('cidade').value.trim();
       const quadra = document.getElementById('quadra').value.trim();
-      const btnSalvar = document.getElementById('btnSalvar');
 
       btnSalvar.disabled = true;
-      btnSalvar.innerHTML = '<span>⏳ Hospedando imagem e criando link...</span>';
+      btnSalvar.innerHTML = '<span>⏳ Salvando alterações...</span>';
 
       try {
         const currentDomain = config.baseUrl || window.location.origin;
-        let finalBannerUrl = `${currentDomain}/assets/banner-beach-tennis.jpg`;
+        let finalBannerUrl = editingBannerUrl || `${currentDomain}/assets/banner-beach-tennis.jpg`;
 
-        // Se o usuário selecionou imagem customizada (Canva), faz upload na nuvem permanente
+        // Se o usuário selecionou uma nova imagem (Canva), faz upload na nuvem permanente
         if (currentImageBase64) {
           const uploadRes = await fetch('/api/upload-image', {
             method: 'POST',
@@ -736,7 +806,44 @@
           zapCode = match[1];
         }
 
-        const generatedLink = `${currentDomain}/c?n=${encodeURIComponent(nome)}&g=${encodeURIComponent(zapCode)}&i=${encodeURIComponent(finalBannerUrl)}${cidade ? '&c=' + encodeURIComponent(cidade) : ''}&v=2`;
+        const cacheBuster = Date.now().toString().slice(-4);
+        const generatedLink = `${currentDomain}/c?n=${encodeURIComponent(nome)}&g=${encodeURIComponent(zapCode)}&i=${encodeURIComponent(finalBannerUrl)}${cidade ? '&c=' + encodeURIComponent(cidade) : ''}&v=${cacheBuster}`;
+
+        let localCondos = JSON.parse(localStorage.getItem('beach_condos_custom') || '[]');
+
+        if (editingCondoId) {
+          const idx = localCondos.findIndex(c => String(c.id) === String(editingCondoId));
+          if (idx !== -1) {
+            localCondos[idx].nome = nome;
+            localCondos[idx].whatsappLink = whatsappLink;
+            localCondos[idx].cidade = cidade || 'Condomínio';
+            localCondos[idx].quadra = quadra || 'Quadra de Areia';
+            localCondos[idx].bannerUrl = finalBannerUrl;
+            localCondos[idx].generatedLink = generatedLink;
+          } else {
+            localCondos.unshift({
+              id: editingCondoId,
+              nome,
+              whatsappLink,
+              cidade: cidade || 'Condomínio',
+              quadra: quadra || 'Quadra de Areia',
+              bannerUrl: finalBannerUrl,
+              generatedLink,
+              isCloud: true
+            });
+            let deletedIds = JSON.parse(localStorage.getItem('beach_deleted_ids') || '[]');
+            if (!deletedIds.includes(String(editingCondoId))) {
+              deletedIds.push(String(editingCondoId));
+              localStorage.setItem('beach_deleted_ids', JSON.stringify(deletedIds));
+            }
+          }
+
+          localStorage.setItem('beach_condos_custom', JSON.stringify(localCondos));
+          showToast(`💾 Alterações do ${nome} salvas com sucesso!`);
+          cancelarEdicao();
+          renderCondominios();
+          return;
+        }
 
         const novo = {
           id: Date.now().toString(),
@@ -750,20 +857,21 @@
         };
 
         // Salva na memória permanente do navegador
-        let localCondos = JSON.parse(localStorage.getItem('beach_condos_custom') || '[]');
         localCondos.unshift(novo);
         localStorage.setItem('beach_condos_custom', JSON.stringify(localCondos));
 
         showToast(`✨ Link do ${nome} criado com sucesso!`);
-        form.reset();
-        currentImageBase64 = null;
-        simImage.src = '/assets/banner-beach-tennis.jpg';
+        cancelarEdicao();
         renderCondominios();
       } catch (err) {
-        alert('Erro ao criar link: ' + err.message);
+        alert('Erro ao salvar condomínio: ' + err.message);
       } finally {
         btnSalvar.disabled = false;
-        btnSalvar.innerHTML = '<span>✨ Criar Link de Divulgação</span>';
+        if (!editingCondoId) {
+          btnSalvar.innerHTML = '<span>✨ Criar Link de Divulgação</span>';
+        } else {
+          btnSalvar.innerHTML = '<span>💾 Salvar Alterações</span>';
+        }
       }
     });
 
