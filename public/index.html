@@ -555,10 +555,9 @@
 
       const currentDomain = config.baseUrl || window.location.origin;
 
-      condosList.innerHTML = allCondos.map(c => {
         const fullLink = c.generatedLink || `${currentDomain}/${c.slug}`;
-        const textoSemLink = `🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\n👆 *Toque na foto ou no link acima para entrar no grupo e agendar sua aula!*`;
-        const linkETexTo = `${fullLink}\n\n${textoSemLink}`;
+        const textoSemLink = `Quer se mexer, queimar calorias e praticar o esporte do momento sem sair do condomínio? Estão abertas as inscrições para as turmas de Beach Tennis na nossa quadra de areia!\n\nConfira como funciona:\n👥 *Turmas VIP:* Máximo de 4 alunos por horário (atenção de perto e rápida evolução)\n🎾 *Material 100% incluso:* O professor leva tudo, inclusive raquetes para quem está começando (você não precisa comprar nada!)\n⏰ *Horários flexíveis:* Serão alinhados direto no grupo de acordo com a disponibilidade de vocês\n💰 *Mensalidade:* Apenas R$ 180/mês\n\n⚠️ *ATENÇÃO:* Como o limite é de apenas 4 pessoas por turma, as vagas são super limitadas!\n\n👇 *Toque no link abaixo (ou na foto acima) para entrar no grupo e garantir sua vaga:*`;
+        const linkETexTo = `${textoSemLink}\n${fullLink}`;
         const bannerPreview = c.bannerUrl || '/assets/banner-beach-tennis.jpg';
 
         return `
