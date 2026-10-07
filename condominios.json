@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "slug": "reserva-dos-passaros",
+    "nome": "Condomínio Reserva dos Pássaros",
+    "cidade": "São Paulo - SP",
+    "quadra": "Quadra de Areia / Beach Tennis",
+    "whatsappLink": "https://chat.whatsapp.com/ExemploGrupoBeach1",
+    "bannerUrl": "/assets/banner-beach-tennis.jpg",
+    "descricao": "Turmas para iniciantes, intermediários, adultos e crianças. Aprenda ou evolua seu jogo sem sair de casa!",
+    "beneficios": [
+      "Aulas práticas na quadra do seu condomínio",
+      "Horários flexíveis (manhã, tarde e noite)",
+      "Material fornecido pelo professor (raquetes e bolinhas)",
+      "Turmas divididas por nível e idade"
+    ]
+  }
+]

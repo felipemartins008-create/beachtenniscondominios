@@ -1,0 +1,17 @@
+{
+  "name": "beach-tennis-condominios",
+  "version": "1.0.0",
+  "description": "Gerador de links de divulgação de Beach Tennis para condomínios com Open Graph para WhatsApp",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node build.js"
+  },
+  "keywords": ["beach-tennis", "whatsapp", "opengraph"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

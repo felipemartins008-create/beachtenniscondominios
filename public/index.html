@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Links de Divulgação | Beach Tennis nos Condomínios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --accent: #f97316;
+      --bg: #0b0f17;
+      --card-bg: #161f30;
+      --card-hover: #1c273c;
+      --border: #243249;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 30px 20px;
+      line-height: 1.5;
+    }
+
+    .wrapper {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+
+    @media (max-width: 820px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #0d1424;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      width: 100%;
+      padding: 14px;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: #0d1424;
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+    }
+
+    .btn-outline:hover {
+      background: #1c273c;
+      color: #fff;
+      border-color: #475569;
+    }
+
+    .btn-sm {
+      padding: 8px 12px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* WhatsApp Simulator Preview */
+    .whatsapp-preview-box {
+      background: #0b141a;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #222d34;
+      margin-top: 10px;
+    }
+
+    .whatsapp-bubble {
+      background: #005c4b;
+      color: #e9edef;
+      border-radius: 12px;
+      padding: 8px;
+      max-width: 380px;
+      margin: 0 auto;
+      font-size: 13px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .og-card {
+      background: #025144;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 6px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .og-img-preview {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+      background: #1f2c34;
+    }
+
+    .og-text {
+      padding: 8px 10px;
+    }
+
+    .og-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+
+    .og-desc {
+      font-size: 11px;
+      color: #8696a0;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .og-url {
+      font-size: 10px;
+      color: #aebac1;
+      margin-top: 4px;
+      text-transform: lowercase;
+    }
+
+    .whatsapp-msg-text {
+      padding: 2px 4px 4px;
+      font-size: 12.5px;
+      color: #e9edef;
+    }
+
+    /* Condominiums List */
+    .condos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .condo-card-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .condo-card-item:hover {
+      border-color: #3b82f6;
+    }
+
+    .condo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .condo-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .condo-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .link-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0d1424;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .link-text {
+      font-family: monospace;
+      font-size: 13px;
+      color: #38bdf8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      display: none;
+      z-index: 9999;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .host-banner {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-top: 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .host-text h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .host-text p {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <header>
+      <div class="badge-top">🎾 Beach Tennis em Condomínios</div>
+      <h1>Gerador de Links com Imagem Automática</h1>
+      <p class="subtitle">
+        Crie links exclusivos para cada condomínio. Quando você colar no WhatsApp, a imagem de capa e os detalhes carregam automaticamente na hora!
+      </p>
+    </header>
+
+    <div class="grid">
+      <!-- Formulário: Adicionar Novo Condomínio -->
+      <div class="card">
+        <div class="card-title">
+          <span>➕</span> Cadastrar Novo Condomínio
+        </div>
+
+        <form id="condoForm">
+          <div class="form-group">
+            <label>Nome do Condomínio *</label>
+            <input type="text" id="nome" placeholder="Ex: Condomínio Residencial Bougainville" required />
+          </div>
+
+          <div class="form-group">
+            <label>Link do Grupo de WhatsApp *</label>
+            <input type="url" id="whatsappLink" placeholder="https://chat.whatsapp.com/..." required />
+          </div>
+
+          <div class="form-group">
+            <label>Cidade / Bairro (Opcional)</label>
+            <input type="text" id="cidade" placeholder="Ex: Alphaville - SP ou Barra da Tijuca - RJ" />
+          </div>
+
+          <div class="form-group">
+            <label>Nome da Quadra (Opcional)</label>
+            <input type="text" id="quadra" placeholder="Ex: Quadra de Areia / Beach Tennis" />
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btnSalvar">
+            <span>✨ Criar Link de Divulgação</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Configuração de Domínio e Simulador WhatsApp -->
+      <div class="card">
+        <div class="card-title">
+          <span>📱</span> Como vai aparecer no WhatsApp
+        </div>
+
+        <div class="form-group">
+          <label>Endereço do seu Site (Quando publicar na internet):</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="baseUrl" placeholder="https://seusite.vercel.app" />
+            <button type="button" class="btn btn-outline btn-sm" id="btnSaveConfig">Salvar</button>
+          </div>
+          <small style="color: #64748b; font-size: 11.5px; margin-top: 4px; display: block;">
+            💡 O WhatsApp precisa do link do seu site na internet para exibir a imagem de capa.
+          </small>
+        </div>
+
+        <!-- Visualizador Simulado do WhatsApp -->
+        <div class="whatsapp-preview-box">
+          <div style="color: #8696a0; font-size: 11px; margin-bottom: 8px; text-align: center;">
+            Prévia do card gerado no WhatsApp:
+          </div>
+
+          <div class="whatsapp-bubble">
+            <div class="og-card">
+              <img src="/assets/banner-beach-tennis.jpg" class="og-img-preview" id="simImage" alt="Beach Tennis Preview" />
+              <div class="og-text">
+                <div class="og-title" id="simTitle">🎾 Beach Tennis no Condomínio | Agendamento</div>
+                <div class="og-desc" id="simDesc">Aulas práticas de Beach Tennis na quadra de areia! Entre no grupo de moradores para agendar.</div>
+                <div class="og-url" id="simUrl">seusite.com/condominio</div>
+              </div>
+            </div>
+            <div class="whatsapp-msg-text">
+              Fala pessoal! 🎾 Quem quiser agendar as aulas de Beach Tennis aqui na quadra do condomínio, acesse o link acima para entrar no grupo!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de Condomínios -->
+    <div class="card">
+      <div class="card-title" style="justify-content: space-between;">
+        <span>📋 Condomínios Cadastrados (<span id="condoCount">0</span>)</span>
+        <button class="btn btn-outline btn-sm" id="btnRecarregar">🔄 Atualizar</button>
+      </div>
+
+      <div class="condos-list" id="condosList">
+        <div style="text-align: center; color: var(--text-muted); padding: 30px;">Carregando condomínios...</div>
+      </div>
+    </div>
+
+    <!-- Instruções de Hospedagem Grátis -->
+    <div class="host-banner">
+      <div class="host-text">
+        <h3>🚀 Como colocar esses links no ar de graça?</h3>
+        <p>Você pode publicar esta pasta em menos de 2 minutos no <strong>Vercel</strong> ou <strong>GitHub Pages</strong> sem pagar nada.</p>
+      </div>
+      <button class="btn btn-outline" id="btnComoPublicar">Ver Passo a Passo</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copiado para a área de transferência!</div>
+
+  <script>
+    let condominios = [];
+    let config = { baseUrl: '' };
+
+    const form = document.getElementById('condoForm');
+    const baseUrlInput = document.getElementById('baseUrl');
+    const btnSaveConfig = document.getElementById('btnSaveConfig');
+    const condosList = document.getElementById('condosList');
+    const condoCount = document.getElementById('condoCount');
+    const toast = document.getElementById('toast');
+
+    // Simulator Elements
+    const nomeInput = document.getElementById('nome');
+    const simTitle = document.getElementById('simTitle');
+    const simUrl = document.getElementById('simUrl');
+
+    nomeInput.addEventListener('input', () => {
+      const nome = nomeInput.value.trim() || 'Condomínio';
+      simTitle.textContent = `🎾 Beach Tennis no ${nome} | Agendamento`;
+      const slug = nome.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      simUrl.textContent = `${config.baseUrl ? config.baseUrl.replace(/^https?:\/\//, '') : 'seusite.com'}/${slug}`;
+    });
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    async function carregarDados() {
+      try {
+        const res = await fetch('/api/condominios');
+        const data = await res.json();
+        condominios = data.condominios || [];
+        config = data.config || { baseUrl: '' };
+
+        baseUrlInput.value = config.baseUrl || window.location.origin;
+        renderCondominios();
+      } catch (err) {
+        console.error('Erro ao carregar condomínios:', err);
+      }
+    }
+
+    function renderCondominios() {
+      condoCount.textContent = condominios.length;
+
+      if (condominios.length === 0) {
+        condosList.innerHTML = `
+          <div style="text-align: center; color: #64748b; padding: 40px 20px;">
+            Nenhum condomínio cadastrado ainda. Use o formulário acima para adicionar o primeiro!
+          </div>
+        `;
+        return;
+      }
+
+      const currentDomain = config.baseUrl || window.location.origin;
+
+      condosList.innerHTML = condominios.map(c => {
+        const fullLink = `${currentDomain}/${c.slug}`;
+        const mensagemPronta = `🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\nAprenda ou pratique beach tennis aqui mesmo na quadra do nosso condomínio! Turmas para iniciantes, intermediários, crianças e adultos.\n\n👇 *Acesse o link para entrar no grupo e agendar sua aula:*\n${fullLink}`;
+
+        return `
+          <div class="condo-card-item">
+            <div class="condo-header">
+              <div>
+                <div class="condo-name">${c.nome}</div>
+                <div class="condo-meta">📍 ${c.cidade} • ${c.quadra}</div>
+              </div>
+              <button class="btn btn-sm btn-delete" onclick="deletarCondominio('${c.id}')">Excluir</button>
+            </div>
+
+            <div class="link-row">
+              <span class="link-text">${fullLink}</span>
+            </div>
+
+            <div class="actions-row">
+              <button class="btn btn-outline btn-sm" onclick="copiarTexto('${fullLink}', 'Link copiado com sucesso!')">
+                📋 Copiar Link
+              </button>
+              <button class="btn btn-outline btn-sm" style="border-color: #10b981; color: #34d399;" onclick="copiarMensagem(${JSON.stringify(mensagemPronta).replace(/"/g, '&quot;')})">
+                💬 Copiar Mensagem Pronta de WhatsApp
+              </button>
+              <a href="/${c.slug}" target="_blank" class="btn btn-outline btn-sm">
+                👁️ Ver Página
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.copiarTexto = function(texto, aviso) {
+      navigator.clipboard.writeText(texto).then(() => {
+        showToast(aviso || 'Copiado para a área de transferência!');
+      });
+    };
+
+    window.copiarMensagem = function(texto) {
+      navigator.clipboard.writeText(texto).then(() => {
+        showToast('Mensagem completa com emojis copiada! Só colar no WhatsApp.');
+      });
+    };
+
+    window.deletarCondominio = async function(id) {
+      if (!confirm('Deseja realmente excluir este condomínio?')) return;
+      try {
+        await fetch(`/api/condominios/${id}`, { method: 'DELETE' });
+        showToast('Condomínio removido!');
+        carregarDados();
+      } catch (err) {
+        alert('Erro ao excluir condomínio');
+      }
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value;
+      const whatsappLink = document.getElementById('whatsappLink').value;
+      const cidade = document.getElementById('cidade').value;
+      const quadra = document.getElementById('quadra').value;
+
+      try {
+        const res = await fetch('/api/condominios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome, whatsappLink, cidade, quadra })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Condomínio "${nome}" criado com sucesso!`);
+          form.reset();
+          carregarDados();
+        } else {
+          alert(data.error || 'Erro ao cadastrar');
+        }
+      } catch (err) {
+        alert('Erro de conexão ao salvar condomínio');
+      }
+    });
+
+    btnSaveConfig.addEventListener('click', async () => {
+      const url = baseUrlInput.value.trim();
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ baseUrl: url })
+        });
+        showToast('Endereço salvo com sucesso!');
+        carregarDados();
+      } catch (err) {
+        alert('Erro ao salvar configuração');
+      }
+    });
+
+    document.getElementById('btnRecarregar').addEventListener('click', carregarDados);
+
+    document.getElementById('btnComoPublicar').addEventListener('click', () => {
+      alert(`Para publicar na internet gratuitamente:\n\n1. Enviaremos o projeto para o GitHub.\n2. Conectaremos com a Vercel (vercel.com) com 1 clique.\n3. A Vercel gera um link como: 'https://seu-beach-tennis.vercel.app' para você usar para sempre de forma 100% gratuita!`);
+    });
+
+    carregarDados();
+  </script>
+</body>
+</html>
