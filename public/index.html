@@ -541,7 +541,8 @@
 
     function renderCondominios() {
       const localCondos = JSON.parse(localStorage.getItem('beach_condos_custom') || '[]');
-      const allCondos = [...localCondos, ...condominios];
+      const deletedIds = JSON.parse(localStorage.getItem('beach_deleted_ids') || '[]');
+      const allCondos = [...localCondos, ...condominios].filter(c => !deletedIds.includes(String(c.id)));
       condoCount.textContent = allCondos.length;
 
       if (allCondos.length === 0) {
@@ -672,12 +673,27 @@
       });
     };
 
-    window.deletarCondominio = function(id) {
+    window.deletarCondominio = async function(id) {
       if (!confirm('Deseja realmente excluir este condomínio da sua lista?')) return;
+      
+      // 1. Remove do localStorage de condomínios criados
       let localCondos = JSON.parse(localStorage.getItem('beach_condos_custom') || '[]');
-      localCondos = localCondos.filter(c => c.id !== id);
+      localCondos = localCondos.filter(c => String(c.id) !== String(id));
       localStorage.setItem('beach_condos_custom', JSON.stringify(localCondos));
-      showToast('Condomínio removido!');
+
+      // 2. Registra na lista de IDs excluídos (para esconder mesmo se vier do servidor)
+      let deletedIds = JSON.parse(localStorage.getItem('beach_deleted_ids') || '[]');
+      if (!deletedIds.includes(String(id))) {
+        deletedIds.push(String(id));
+        localStorage.setItem('beach_deleted_ids', JSON.stringify(deletedIds));
+      }
+
+      // 3. Tenta deletar no backend (caso o servidor suporte)
+      try {
+        await fetch(`/api/condominios/${id}`, { method: 'DELETE' });
+      } catch (err) {}
+
+      showToast('Condomínio removido com sucesso!');
       renderCondominios();
     };
 
