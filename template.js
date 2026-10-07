@@ -92,15 +92,13 @@ function generateCondoPage(condo, baseUrl = '') {
     .banner-wrapper {
       position: relative;
       width: 100%;
-      height: 280px;
       overflow: hidden;
-      background: #000;
+      background: #0f172a;
     }
 
     .banner-img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
       display: block;
     }
 
