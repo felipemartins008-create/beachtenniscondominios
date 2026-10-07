@@ -1,5 +1,21 @@
 [
   {
+    "id": "1791383176244",
+    "slug": "brisas-da-mata",
+    "nome": "Brisas da Mata",
+    "cidade": "Condomínio",
+    "quadra": "Quadra de Areia",
+    "whatsappLink": "https://chat.whatsapp.com/KQgazwubvSs5AsVydZRcBX?mode=gi_t",
+    "bannerUrl": "/assets/banner-brisas-da-mata.jpg",
+    "descricao": "Turmas para iniciantes, intermediários, adultos e crianças. Aprenda ou evolua seu jogo sem sair de casa!",
+    "beneficios": [
+      "Aulas práticas na quadra do seu condomínio",
+      "Horários flexíveis (manhã, tarde e noite)",
+      "Material fornecido pelo professor (raquetes e bolinhas)",
+      "Turmas divididas por nível e idade"
+    ]
+  },
+  {
     "id": "1",
     "slug": "reserva-dos-passaros",
     "nome": "Condomínio Reserva dos Pássaros",
