@@ -381,17 +381,15 @@
       <div class="badge-top">🎾 Beach Tennis em Condomínios</div>
       <h1>Gerador de Links com Imagem Automática</h1>
       <p class="subtitle">
+      <p class="subtitle">
         Crie links exclusivos para cada condomínio. Quando você colar no WhatsApp, a imagem de capa e os detalhes carregam automaticamente na hora!
+      </p>
     </header>
 
-    <div id="vercelAlertBanner" style="display: none; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); border-radius: 14px; padding: 16px 20px; margin-bottom: 24px; text-align: left;">
-      <div style="font-weight: 700; color: #fb923c; margin-bottom: 4px; font-size: 15px;">
-        ⚠️ Você está acessando pelo link da Vercel (Modo Leitura)
-      </div>
-      <div style="font-size: 13.5px; color: #e2e8f0; line-height: 1.4;">
-        Para cadastrar novos condomínios e subir suas fotos do Canva, abra o painel no seu computador em: 
-        <a href="http://localhost:3333" style="color: #38bdf8; font-weight: 700; text-decoration: underline;">http://localhost:3333</a>.<br>
-        Lá o seu computador salva os arquivos e envia para a Vercel com 1 clique no botão "Sincronizar"!
+    <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 22px;">⚡</span>
+      <div style="font-size: 13.5px; color: #e2e8f0;">
+        <strong>Modo 100% Online Ativo:</strong> Agora você pode cadastrar condomínios e subir suas imagens do Canva direto pelo navegador ou celular, sem precisar de nada rodando no computador!
       </div>
     </div>
 
@@ -405,7 +403,7 @@
         <form id="condoForm">
           <div class="form-group">
             <label>Nome do Condomínio *</label>
-            <input type="text" id="nome" placeholder="Ex: Condomínio Residencial Bougainville" required />
+            <input type="text" id="nome" placeholder="Ex: Brisas da Mata" required />
           </div>
 
           <div class="form-group">
@@ -444,14 +442,11 @@
         </div>
 
         <div class="form-group">
-          <label>Endereço do seu Site (Quando publicar na internet):</label>
+          <label>Endereço do seu Site (Vercel):</label>
           <div style="display: flex; gap: 8px;">
-            <input type="text" id="baseUrl" placeholder="https://seusite.vercel.app" />
+            <input type="text" id="baseUrl" placeholder="https://beachtenniscondominios.vercel.app" />
             <button type="button" class="btn btn-outline btn-sm" id="btnSaveConfig">Salvar</button>
           </div>
-          <small style="color: #64748b; font-size: 11.5px; margin-top: 4px; display: block;">
-            💡 O WhatsApp precisa do link do seu site na internet para exibir a imagem de capa.
-          </small>
         </div>
 
         <!-- Visualizador Simulado do WhatsApp -->
@@ -481,12 +476,7 @@
     <div class="card">
       <div class="card-title" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
         <span>📋 Condomínios Cadastrados (<span id="condoCount">0</span>)</span>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn btn-outline btn-sm" id="btnRecarregar">🔄 Atualizar</button>
-          <button class="btn btn-outline btn-sm" id="btnPublishVercel" style="border-color: #38bdf8; color: #38bdf8;">
-            🚀 Sincronizar com a Vercel (1 Clique)
-          </button>
-        </div>
+        <button class="btn btn-outline btn-sm" id="btnRecarregar">🔄 Atualizar</button>
       </div>
 
       <div class="condos-list" id="condosList">
@@ -543,18 +533,19 @@
         const data = await res.json();
         condominios = data.condominios || [];
         config = data.config || { baseUrl: '' };
-
         baseUrlInput.value = config.baseUrl || window.location.origin;
-        renderCondominios();
       } catch (err) {
-        console.error('Erro ao carregar condomínios:', err);
+        console.error('Erro ao carregar condomínios da API:', err);
       }
+      renderCondominios();
     }
 
     function renderCondominios() {
-      condoCount.textContent = condominios.length;
+      const localCondos = JSON.parse(localStorage.getItem('beach_condos_custom') || '[]');
+      const allCondos = [...localCondos, ...condominios];
+      condoCount.textContent = allCondos.length;
 
-      if (condominios.length === 0) {
+      if (allCondos.length === 0) {
         condosList.innerHTML = `
           <div style="text-align: center; color: #64748b; padding: 40px 20px;">
             Nenhum condomínio cadastrado ainda. Use o formulário acima para adicionar o primeiro!
@@ -565,8 +556,8 @@
 
       const currentDomain = config.baseUrl || window.location.origin;
 
-      condosList.innerHTML = condominios.map(c => {
-        const fullLink = `${currentDomain}/${c.slug}`;
+      condosList.innerHTML = allCondos.map(c => {
+        const fullLink = c.generatedLink || `${currentDomain}/${c.slug}`;
         const textoSemLink = `🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\nAprenda ou pratique beach tennis aqui mesmo na quadra do nosso condomínio! Turmas para iniciantes, intermediários, crianças e adultos.\n\n👆 *Toque na foto ou no link acima para entrar no grupo e agendar sua aula!*`;
         const linkETexTo = `${fullLink}\n\n${textoSemLink}`;
         const bannerPreview = c.bannerUrl || '/assets/banner-beach-tennis.jpg';
@@ -598,7 +589,7 @@
               <button class="btn btn-outline btn-sm" onclick="copiarMensagem(${JSON.stringify(linkETexTo).replace(/"/g, '&quot;')})">
                 ⚡ Copiar Tudo Junto (Link + Texto)
               </button>
-              <a href="/${c.slug}" target="_blank" class="btn btn-outline btn-sm">
+              <a href="${fullLink}" target="_blank" class="btn btn-outline btn-sm">
                 👁️ Ver Página
               </a>
             </div>
@@ -661,91 +652,83 @@
       });
     };
 
-    window.deletarCondominio = async function(id) {
-      if (!confirm('Deseja realmente excluir este condomínio?')) return;
-      try {
-        await fetch(`/api/condominios/${id}`, { method: 'DELETE' });
-        showToast('Condomínio removido!');
-        carregarDados();
-      } catch (err) {
-        alert('Erro ao excluir condomínio');
-      }
+    window.deletarCondominio = function(id) {
+      if (!confirm('Deseja realmente excluir este condomínio da sua lista?')) return;
+      let localCondos = JSON.parse(localStorage.getItem('beach_condos_custom') || '[]');
+      localCondos = localCondos.filter(c => c.id !== id);
+      localStorage.setItem('beach_condos_custom', JSON.stringify(localCondos));
+      showToast('Condomínio removido!');
+      renderCondominios();
     };
-
-    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      const banner = document.getElementById('vercelAlertBanner');
-      if (banner) banner.style.display = 'block';
-    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        alert('⚠️ ATENÇÃO: Para cadastrar novos condomínios e fazer upload de fotos, abra o painel no seu computador em http://localhost:3333.\n\nNa Vercel o site fica em modo somente leitura. Depois de cadastrar no seu computador, basta clicar em "Sincronizar com a Vercel"!');
-        return;
-      }
+      const nome = document.getElementById('nome').value.trim();
+      const whatsappLink = document.getElementById('whatsappLink').value.trim();
+      const cidade = document.getElementById('cidade').value.trim();
+      const quadra = document.getElementById('quadra').value.trim();
+      const btnSalvar = document.getElementById('btnSalvar');
 
-      const nome = document.getElementById('nome').value;
-      const whatsappLink = document.getElementById('whatsappLink').value;
-      const cidade = document.getElementById('cidade').value;
-      const quadra = document.getElementById('quadra').value;
+      btnSalvar.disabled = true;
+      btnSalvar.innerHTML = '<span>⏳ Hospedando imagem e criando link...</span>';
 
       try {
-        const res = await fetch('/api/condominios', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            nome, 
-            whatsappLink, 
-            cidade, 
-            quadra,
-            imageBase64: currentImageBase64
-          })
-        });
+        const currentDomain = config.baseUrl || window.location.origin;
+        let finalBannerUrl = `${currentDomain}/assets/banner-beach-tennis.jpg`;
 
-        const data = await res.json();
-        if (data.success) {
-          showToast(`Condomínio "${nome}" criado com sucesso!`);
-          form.reset();
-          currentImageBase64 = null;
-          simImage.src = '/assets/banner-beach-tennis.jpg';
-          carregarDados();
-        } else {
-          alert(data.error || 'Erro ao cadastrar');
+        // Se o usuário selecionou imagem customizada (Canva), faz upload na nuvem permanente
+        if (currentImageBase64) {
+          const uploadRes = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageBase64: currentImageBase64 })
+          });
+          const uploadData = await uploadRes.json();
+          if (uploadData.success && uploadData.url) {
+            finalBannerUrl = uploadData.url;
+          } else {
+            throw new Error(uploadData.error || 'Falha no envio da imagem para a nuvem.');
+          }
         }
+
+        // Extrai código do WhatsApp
+        let zapCode = whatsappLink;
+        const match = whatsappLink.match(/chat\.whatsapp\.com\/([A-Za-z0-9_-]+)/);
+        if (match) {
+          zapCode = match[1];
+        }
+
+        const generatedLink = `${currentDomain}/c?n=${encodeURIComponent(nome)}&g=${encodeURIComponent(zapCode)}&i=${encodeURIComponent(finalBannerUrl)}${cidade ? '&c=' + encodeURIComponent(cidade) : ''}`;
+
+        const novo = {
+          id: Date.now().toString(),
+          nome: nome,
+          cidade: cidade || 'Condomínio',
+          quadra: quadra || 'Quadra de Areia',
+          whatsappLink: whatsappLink,
+          bannerUrl: finalBannerUrl,
+          generatedLink: generatedLink,
+          isCloud: true
+        };
+
+        // Salva na memória permanente do navegador
+        let localCondos = JSON.parse(localStorage.getItem('beach_condos_custom') || '[]');
+        localCondos.unshift(novo);
+        localStorage.setItem('beach_condos_custom', JSON.stringify(localCondos));
+
+        showToast(`✨ Link do ${nome} criado com sucesso!`);
+        form.reset();
+        currentImageBase64 = null;
+        simImage.src = '/assets/banner-beach-tennis.jpg';
+        renderCondominios();
       } catch (err) {
-        alert('Erro de conexão ao salvar condomínio');
+        alert('Erro ao criar link: ' + err.message);
+      } finally {
+        btnSalvar.disabled = false;
+        btnSalvar.innerHTML = '<span>✨ Criar Link de Divulgação</span>';
       }
     });
-
-    // Botão de 1 clique para sincronizar com Vercel
-    const btnPublish = document.getElementById('btnPublishVercel');
-    if (btnPublish) {
-      btnPublish.addEventListener('click', async () => {
-        btnPublish.disabled = true;
-        btnPublish.textContent = '⏳ Enviando para a Vercel...';
-        try {
-          const res = await fetch('/api/publish', { method: 'POST' });
-          const data = await res.json();
-          if (data.success) {
-            showToast('🚀 Tudo sincronizado! Em ~20 segundos estará no ar na Vercel.');
-            btnPublish.textContent = '✅ Atualizado na Vercel!';
-            setTimeout(() => {
-              btnPublish.textContent = '🚀 Sincronizar com a Vercel (1 Clique)';
-              btnPublish.disabled = false;
-            }, 4000);
-          } else {
-            alert(data.error || 'Erro ao sincronizar');
-            btnPublish.textContent = '🚀 Sincronizar com a Vercel (1 Clique)';
-            btnPublish.disabled = false;
-          }
-        } catch (err) {
-          alert('Erro de conexão ao sincronizar com a Vercel');
-          btnPublish.textContent = '🚀 Sincronizar com a Vercel (1 Clique)';
-          btnPublish.disabled = false;
-        }
-      });
-    }
 
     btnSaveConfig.addEventListener('click', async () => {
       const url = baseUrlInput.value.trim();
@@ -763,10 +746,6 @@
     });
 
     document.getElementById('btnRecarregar').addEventListener('click', carregarDados);
-
-    document.getElementById('btnComoPublicar').addEventListener('click', () => {
-      alert(`Para publicar na internet gratuitamente:\n\n1. Cadastre os condomínios no painel.\n2. Clique no botão azul 'Sincronizar com a Vercel'.\n3. Em 20 segundos a Vercel atualiza tudo automaticamente!`);
-    });
 
     carregarDados();
   </script>

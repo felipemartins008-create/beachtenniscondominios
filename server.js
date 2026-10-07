@@ -152,6 +152,69 @@ app.delete('/api/condominios/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// API: Upload de imagem para nuvem pública permanente (Catbox)
+app.post('/api/upload-image', async (req, res) => {
+  try {
+    const { imageBase64 } = req.body;
+    if (!imageBase64) {
+      return res.status(400).json({ error: 'Nenhuma imagem enviada' });
+    }
+
+    const base64Data = imageBase64.includes('base64,')
+      ? imageBase64.split('base64,')[1]
+      : imageBase64;
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const formData = new FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', new Blob([buffer], { type: 'image/jpeg' }), 'banner.jpg');
+
+    const response = await fetch('https://catbox.moe/user/api.php', {
+      method: 'POST',
+      body: formData
+    });
+
+    const fileUrl = await response.text();
+    if (fileUrl && fileUrl.startsWith('http')) {
+      return res.json({ success: true, url: fileUrl.trim() });
+    } else {
+      throw new Error(fileUrl || 'Falha no upload da imagem para o servidor de arquivos');
+    }
+  } catch (err) {
+    console.error('Erro no upload de imagem:', err);
+    res.status(500).json({ error: 'Erro ao hospedar imagem: ' + err.message });
+  }
+});
+
+// Rota de condomínio gerada online (100% cloud sem banco)
+app.get('/c', (req, res) => {
+  const { n, nome, g, zap, w, i, img, c, cidade } = req.query;
+  const condoNome = n || nome || 'Condomínio';
+  const rawZap = g || zap || w || '';
+  const whatsappLink = rawZap.startsWith('http')
+    ? rawZap
+    : `https://chat.whatsapp.com/${rawZap}`;
+
+  let bannerUrl = i || img || '/assets/banner-beach-tennis.jpg';
+  if (bannerUrl && !bannerUrl.startsWith('http') && !bannerUrl.startsWith('/')) {
+    bannerUrl = `https://files.catbox.moe/${bannerUrl}`;
+  }
+
+  const condo = {
+    nome: condoNome,
+    cidade: c || cidade || 'Condomínio',
+    quadra: 'Quadra de Areia / Beach Tennis',
+    whatsappLink: whatsappLink,
+    bannerUrl: bannerUrl,
+    descricao: `Aulas de Beach Tennis na quadra do ${condoNome}! Turmas para iniciantes, intermediários, crianças e adultos. Entre no grupo para agendar.`
+  };
+
+  const config = getConfig();
+  const host = config.baseUrl || `${req.protocol}://${req.get('host')}`;
+  const html = generateCondoPage(condo, host);
+  res.send(html);
+});
+
 // Rota de cada condomínio com Open Graph dinâmico
 app.get('/:slug', (req, res, next) => {
   const condominios = getCondominios();
