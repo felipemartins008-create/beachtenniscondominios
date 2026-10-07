@@ -544,7 +544,7 @@
 
       condosList.innerHTML = condominios.map(c => {
         const fullLink = `${currentDomain}/${c.slug}`;
-        const mensagemPronta = `🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\nAprenda ou pratique beach tennis aqui mesmo na quadra do nosso condomínio! Turmas para iniciantes, intermediários, crianças e adultos.\n\n👇 *Acesse o link para entrar no grupo e agendar sua aula:*\n${fullLink}`;
+        const mensagemPronta = `${fullLink}\n\n🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\nAprenda ou pratique beach tennis aqui mesmo na quadra do nosso condomínio! Turmas para iniciantes, intermediários, crianças e adultos.\n\n👆 *Toque na foto ou no link acima para entrar no grupo e agendar sua aula!*`;
 
         return `
           <div class="condo-card-item">
