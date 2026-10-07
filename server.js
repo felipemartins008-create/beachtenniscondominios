@@ -6,8 +6,10 @@ const { generateCondoPage } = require('./template');
 const app = express();
 const PORT = process.env.PORT || 3333;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const { exec } = require('child_process');
+
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const DATA_FILE = path.join(__dirname, 'condominios.json');
@@ -56,9 +58,9 @@ function generateSlug(text) {
     .replace(/^-+|-+$/g, '');
 }
 
-// API: Criar novo condomínio
+// API: Criar novo condomínio (com suporte a imagem personalizada)
 app.post('/api/condominios', (req, res) => {
-  const { nome, whatsappLink, cidade, quadra, descricao } = req.body;
+  const { nome, whatsappLink, cidade, quadra, descricao, imageBase64 } = req.body;
   if (!nome || !whatsappLink) {
     return res.status(400).json({ error: 'Nome e Link do WhatsApp são obrigatórios' });
   }
@@ -73,6 +75,26 @@ app.post('/api/condominios', (req, res) => {
     finalSlug = `${slug}-${count++}`;
   }
 
+  // Handle custom image upload if provided
+  let bannerUrl = '/assets/banner-beach-tennis.jpg';
+  if (imageBase64) {
+    try {
+      const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        const buffer = Buffer.from(matches[2], 'base64');
+        const fileName = `banner-${finalSlug}.jpg`;
+        const assetsDir = path.join(__dirname, 'public', 'assets');
+        if (!fs.existsSync(assetsDir)) {
+          fs.mkdirSync(assetsDir, { recursive: true });
+        }
+        fs.writeFileSync(path.join(assetsDir, fileName), buffer);
+        bannerUrl = `/assets/${fileName}`;
+      }
+    } catch (err) {
+      console.error('Erro ao salvar imagem customizada:', err);
+    }
+  }
+
   const novo = {
     id: Date.now().toString(),
     slug: finalSlug,
@@ -80,7 +102,7 @@ app.post('/api/condominios', (req, res) => {
     cidade: cidade ? cidade.trim() : 'Condomínio',
     quadra: quadra ? quadra.trim() : 'Quadra de Areia',
     whatsappLink: whatsappLink.trim(),
-    bannerUrl: '/assets/banner-beach-tennis.jpg',
+    bannerUrl: bannerUrl,
     descricao: descricao ? descricao.trim() : `Turmas para iniciantes, intermediários, adultos e crianças. Aprenda ou evolua seu jogo sem sair de casa!`,
     beneficios: [
       'Aulas práticas na quadra do seu condomínio',
@@ -93,14 +115,22 @@ app.post('/api/condominios', (req, res) => {
   condominios.unshift(novo);
   saveCondominios(condominios);
 
-  // Also trigger static build if needed
-  try {
-    require('./build');
-  } catch (err) {
-    console.error('Build static trigger:', err.message);
-  }
-
   res.json({ success: true, item: novo });
+});
+
+// API: Publicar/Sincronizar com o GitHub / Vercel com 1 clique
+app.post('/api/publish', (req, res) => {
+  exec('git add . && git commit -m "feat: adicionar condominios e imagens" && git push origin main', (error, stdout, stderr) => {
+    if (error) {
+      // If nothing to commit, still consider it fine
+      if (stderr && stderr.includes('nothing to commit')) {
+        return res.json({ success: true, message: 'Já está tudo atualizado na Vercel!' });
+      }
+      console.error('Erro no git push:', stderr || error.message);
+      return res.status(500).json({ error: 'Erro ao enviar para o GitHub: ' + (stderr || error.message) });
+    }
+    res.json({ success: true, message: 'Alterações enviadas para a Vercel com sucesso!' });
+  });
 });
 
 // API: Excluir condomínio
