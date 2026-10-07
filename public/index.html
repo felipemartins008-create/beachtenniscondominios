@@ -555,8 +555,29 @@
 
       const currentDomain = config.baseUrl || window.location.origin;
 
+      // Atualiza automaticamente os links já salvos no navegador para usar &v=2 (faz o WhatsApp ignorar o cache antigo)
+      let localUpdated = false;
+      localCondos.forEach(c => {
+        if (c.generatedLink && c.generatedLink.includes('/c?')) {
+          const oldLink = c.generatedLink;
+          let newLink = oldLink.replace(/[?&]v=[^&]+/, '');
+          newLink += (newLink.includes('?') ? '&' : '?') + 'v=2';
+          if (oldLink !== newLink) {
+            c.generatedLink = newLink;
+            localUpdated = true;
+          }
+        }
+      });
+      if (localUpdated) {
+        localStorage.setItem('beach_condos_custom', JSON.stringify(localCondos));
+      }
+
       condosList.innerHTML = allCondos.map(c => {
-        const fullLink = c.generatedLink || `${currentDomain}/${c.slug}`;
+        let fullLink = c.generatedLink || `${currentDomain}/${c.slug}`;
+        if (fullLink.includes('/c?')) {
+          fullLink = fullLink.replace(/[?&]v=[^&]+/, '');
+          fullLink += (fullLink.includes('?') ? '&' : '?') + 'v=2';
+        }
         const textoSemLink = `Uma ótima oportunidade para quem quer se movimentar e aprender a jogar sem pegar trânsito nem sair de casa!\n\n• Máximo 4 alunos por turma\n• Material e raquetes fornecidos pelo professor\n• Horários combinados no grupo\n• Mensalidade: R$ 180\n\n⚠️ *Vagas limitadas por turma!*\n\n👇 *Toque no link abaixo (ou na foto acima) para entrar no grupo e garantir seu horário:*`;
         const linkETexTo = `${textoSemLink}\n${fullLink}`;
         const bannerPreview = c.bannerUrl || '/assets/banner-beach-tennis.jpg';
@@ -698,7 +719,7 @@
           zapCode = match[1];
         }
 
-        const generatedLink = `${currentDomain}/c?n=${encodeURIComponent(nome)}&g=${encodeURIComponent(zapCode)}&i=${encodeURIComponent(finalBannerUrl)}${cidade ? '&c=' + encodeURIComponent(cidade) : ''}&v=clean`;
+        const generatedLink = `${currentDomain}/c?n=${encodeURIComponent(nome)}&g=${encodeURIComponent(zapCode)}&i=${encodeURIComponent(finalBannerUrl)}${cidade ? '&c=' + encodeURIComponent(cidade) : ''}&v=2`;
 
         const novo = {
           id: Date.now().toString(),

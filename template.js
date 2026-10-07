@@ -29,7 +29,8 @@ function generateCondoPage(condo, baseUrl = '') {
   <!-- Open Graph / WhatsApp Preview Tags (Essencial para WhatsApp) -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="${pageTitle}" />
-  ${pageDesc ? `<meta property="og:description" content="${pageDesc}" />` : ''}
+  <meta property="og:description" content="${pageDesc ? pageDesc : '&#x200B;'}" />
+  <meta name="description" content="${pageDesc ? pageDesc : '&#x200B;'}" />
   <meta property="og:image" content="${absoluteImageUrl}" />
   <meta property="og:image:secure_url" content="${absoluteImageUrl}" />
   <meta property="og:image:type" content="image/jpeg" />
@@ -40,7 +41,7 @@ function generateCondoPage(condo, baseUrl = '') {
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${pageTitle}" />
-  ${pageDesc ? `<meta name="twitter:description" content="${pageDesc}" />` : ''}
+  <meta name="twitter:description" content="${pageDesc ? pageDesc : '&#x200B;'}" />
   <meta name="twitter:image" content="${absoluteImageUrl}" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
