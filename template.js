@@ -33,8 +33,8 @@ function generateCondoPage(condo, baseUrl = '') {
   <meta property="og:image" content="${absoluteImageUrl}" />
   <meta property="og:image:secure_url" content="${absoluteImageUrl}" />
   <meta property="og:image:type" content="image/jpeg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="675" />
+  <meta property="og:image:width" content="800" />
+  <meta property="og:image:height" content="800" />
   <meta property="og:site_name" content="Aulas de Beach Tennis" />
 
   <!-- Twitter Card -->
@@ -91,7 +91,7 @@ function generateCondoPage(condo, baseUrl = '') {
     .banner-wrapper {
       position: relative;
       width: 100%;
-      height: 210px;
+      height: 280px;
       overflow: hidden;
       background: #000;
     }
