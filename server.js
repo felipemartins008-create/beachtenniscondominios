@@ -242,7 +242,7 @@ app.get('/c', (req, res) => {
     quadra: 'Quadra de Areia / Beach Tennis',
     whatsappLink: whatsappLink,
     bannerUrl: bannerUrl,
-    descricao: `Aulas de Beach Tennis na quadra do ${condoNome}! Turmas para iniciantes, intermediários, crianças e adultos. Entre no grupo para agendar.`
+    descricao: ''
   };
 
   const config = getConfig();

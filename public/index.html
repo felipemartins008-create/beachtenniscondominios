@@ -460,7 +460,6 @@
               <img src="/assets/banner-beach-tennis.jpg" class="og-img-preview" id="simImage" alt="Beach Tennis Preview" />
               <div class="og-text">
                 <div class="og-title" id="simTitle">🎾 Beach Tennis no Condomínio | Agendamento</div>
-                <div class="og-desc" id="simDesc">Aulas práticas de Beach Tennis na quadra de areia! Entre no grupo de moradores para agendar.</div>
                 <div class="og-url" id="simUrl">seusite.com/condominio</div>
               </div>
             </div>
@@ -558,7 +557,7 @@
 
       condosList.innerHTML = allCondos.map(c => {
         const fullLink = c.generatedLink || `${currentDomain}/${c.slug}`;
-        const textoSemLink = `🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\nAprenda ou pratique beach tennis aqui mesmo na quadra do nosso condomínio! Turmas para iniciantes, intermediários, crianças e adultos.\n\n👆 *Toque na foto ou no link acima para entrar no grupo e agendar sua aula!*`;
+        const textoSemLink = `🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\n👆 *Toque na foto ou no link acima para entrar no grupo e agendar sua aula!*`;
         const linkETexTo = `${fullLink}\n\n${textoSemLink}`;
         const bannerPreview = c.bannerUrl || '/assets/banner-beach-tennis.jpg';
 

@@ -5,7 +5,7 @@ function generateCondoPage(condo, baseUrl = '') {
     : `${baseUrl.replace(/\/$/, '')}${condo.bannerUrl.startsWith('/') ? '' : '/'}${condo.bannerUrl}`;
 
   const pageTitle = `🎾 Beach Tennis no ${condo.nome} | Agendamento`;
-  const pageDesc = condo.descricao || `Aulas práticas de Beach Tennis na quadra do ${condo.nome}! Entre no grupo exclusivo de moradores para agendar sua aula.`;
+  const pageDesc = condo.descricao || '';
 
   const beneficiosHtml = (condo.beneficios || [
     'Aulas práticas na quadra do seu condomínio',
@@ -29,7 +29,7 @@ function generateCondoPage(condo, baseUrl = '') {
   <!-- Open Graph / WhatsApp Preview Tags (Essencial para WhatsApp) -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="${pageTitle}" />
-  <meta property="og:description" content="${pageDesc}" />
+  ${pageDesc ? `<meta property="og:description" content="${pageDesc}" />` : ''}
   <meta property="og:image" content="${absoluteImageUrl}" />
   <meta property="og:image:secure_url" content="${absoluteImageUrl}" />
   <meta property="og:image:type" content="image/jpeg" />
@@ -40,7 +40,7 @@ function generateCondoPage(condo, baseUrl = '') {
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${pageTitle}" />
-  <meta name="twitter:description" content="${pageDesc}" />
+  ${pageDesc ? `<meta name="twitter:description" content="${pageDesc}" />` : ''}
   <meta name="twitter:image" content="${absoluteImageUrl}" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -282,9 +282,7 @@ function generateCondoPage(condo, baseUrl = '') {
         <span>${condo.quadra || 'Quadra de Areia'}</span>
       </div>
 
-      <p class="desc">
-        ${condo.descricao || 'Entre no grupo oficial de moradores para conferir os horários disponíveis, valores das turmas e agendar sua aula prática.'}
-      </p>
+      ${condo.descricao ? `<p class="desc">${condo.descricao}</p>` : ''}
 
       <div class="benefits-card">
         <div class="benefits-title">Como funcionam as aulas:</div>
