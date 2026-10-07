@@ -555,6 +555,7 @@
 
       const currentDomain = config.baseUrl || window.location.origin;
 
+      condosList.innerHTML = allCondos.map(c => {
         const fullLink = c.generatedLink || `${currentDomain}/${c.slug}`;
         const textoSemLink = `Uma ótima oportunidade para quem quer se movimentar e aprender a jogar sem pegar trânsito nem sair de casa!\n\n• Máximo 4 alunos por turma\n• Material e raquetes fornecidos pelo professor\n• Horários combinados no grupo\n• Mensalidade: R$ 180\n\n⚠️ *Vagas limitadas por turma!*\n\n👇 *Toque no link abaixo (ou na foto acima) para entrar no grupo e garantir seu horário:*`;
         const linkETexTo = `${textoSemLink}\n${fullLink}`;
