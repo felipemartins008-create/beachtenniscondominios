@@ -557,7 +557,8 @@
 
       condosList.innerHTML = condominios.map(c => {
         const fullLink = `${currentDomain}/${c.slug}`;
-        const mensagemPronta = `${fullLink}\n\n🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\nAprenda ou pratique beach tennis aqui mesmo na quadra do nosso condomínio! Turmas para iniciantes, intermediários, crianças e adultos.\n\n👆 *Toque na foto ou no link acima para entrar no grupo e agendar sua aula!*`;
+        const textoSemLink = `🎾 *AULAS DE BEACH TENNIS NO ${c.nome.toUpperCase()}!* 🎾\n\nAprenda ou pratique beach tennis aqui mesmo na quadra do nosso condomínio! Turmas para iniciantes, intermediários, crianças e adultos.\n\n👆 *Toque na foto ou no link acima para entrar no grupo e agendar sua aula!*`;
+        const linkETexTo = `${fullLink}\n\n${textoSemLink}`;
         const bannerPreview = c.bannerUrl || '/assets/banner-beach-tennis.jpg';
 
         return `
@@ -578,11 +579,14 @@
             </div>
 
             <div class="actions-row">
-              <button class="btn btn-outline btn-sm" onclick="copiarTexto('${fullLink}', 'Link copiado com sucesso!')">
+              <button class="btn btn-outline btn-sm" onclick="copiarTexto('${fullLink}', 'Link copiado! Cole no WhatsApp e aguarde a foto aparecer.')">
                 📋 Copiar Link
               </button>
-              <button class="btn btn-outline btn-sm" style="border-color: #10b981; color: #34d399;" onclick="copiarMensagem(${JSON.stringify(mensagemPronta).replace(/"/g, '&quot;')})">
-                💬 Copiar Mensagem Pronta de WhatsApp
+              <button class="btn btn-outline btn-sm" style="border-color: #10b981; color: #34d399;" onclick="copiarMensagem(${JSON.stringify(textoSemLink).replace(/"/g, '&quot;')})">
+                💬 Copiar Apenas o Texto (Sem Link)
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="copiarMensagem(${JSON.stringify(linkETexTo).replace(/"/g, '&quot;')})">
+                ⚡ Copiar Tudo Junto (Link + Texto)
               </button>
               <a href="/${c.slug}" target="_blank" class="btn btn-outline btn-sm">
                 👁️ Ver Página
