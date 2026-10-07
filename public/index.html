@@ -698,7 +698,7 @@
           zapCode = match[1];
         }
 
-        const generatedLink = `${currentDomain}/c?n=${encodeURIComponent(nome)}&g=${encodeURIComponent(zapCode)}&i=${encodeURIComponent(finalBannerUrl)}${cidade ? '&c=' + encodeURIComponent(cidade) : ''}`;
+        const generatedLink = `${currentDomain}/c?n=${encodeURIComponent(nome)}&g=${encodeURIComponent(zapCode)}&i=${encodeURIComponent(finalBannerUrl)}${cidade ? '&c=' + encodeURIComponent(cidade) : ''}&v=clean`;
 
         const novo = {
           id: Date.now().toString(),
