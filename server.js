@@ -152,7 +152,56 @@ app.delete('/api/condominios/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// API: Upload de imagem para nuvem pública permanente (Catbox)
+// API: Upload de imagem para nuvem com fallback automático (x0.at, Catbox, Uguu)
+async function uploadToCloud(buffer) {
+  // Provedor 1: x0.at (Rápido, sem bloqueio de IP de nuvem/Vercel)
+  try {
+    const fd = new FormData();
+    fd.append('file', new Blob([buffer], { type: 'image/jpeg' }), 'banner.jpg');
+    const res = await fetch('https://x0.at/', {
+      method: 'POST',
+      body: fd,
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+    });
+    const url = (await res.text()).trim();
+    if (url.startsWith('http')) return url;
+  } catch (err) {
+    console.warn('Provedor x0.at falhou, tentando próximo...', err.message);
+  }
+
+  // Provedor 2: Catbox com headers completos de navegador
+  try {
+    const fd = new FormData();
+    fd.append('reqtype', 'fileupload');
+    fd.append('fileToUpload', new Blob([buffer], { type: 'image/jpeg' }), 'banner.jpg');
+    const res = await fetch('https://catbox.moe/user/api.php', {
+      method: 'POST',
+      body: fd,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Referer': 'https://catbox.moe/'
+      }
+    });
+    const url = (await res.text()).trim();
+    if (url.startsWith('http')) return url;
+  } catch (err) {
+    console.warn('Provedor catbox falhou, tentando próximo...', err.message);
+  }
+
+  // Provedor 3: Uguu.se
+  try {
+    const fd = new FormData();
+    fd.append('files[]', new Blob([buffer], { type: 'image/jpeg' }), 'banner.jpg');
+    const res = await fetch('https://uguu.se/upload.php', { method: 'POST', body: fd });
+    const json = await res.json();
+    if (json.success && json.files?.[0]?.url) return json.files[0].url;
+  } catch (err) {
+    console.warn('Provedor uguu falhou:', err.message);
+  }
+
+  throw new Error('Não foi possível hospedar a imagem no momento. Tente novamente em alguns segundos.');
+}
+
 app.post('/api/upload-image', async (req, res) => {
   try {
     const { imageBase64 } = req.body;
@@ -165,21 +214,8 @@ app.post('/api/upload-image', async (req, res) => {
       : imageBase64;
     const buffer = Buffer.from(base64Data, 'base64');
 
-    const formData = new FormData();
-    formData.append('reqtype', 'fileupload');
-    formData.append('fileToUpload', new Blob([buffer], { type: 'image/jpeg' }), 'banner.jpg');
-
-    const response = await fetch('https://catbox.moe/user/api.php', {
-      method: 'POST',
-      body: formData
-    });
-
-    const fileUrl = await response.text();
-    if (fileUrl && fileUrl.startsWith('http')) {
-      return res.json({ success: true, url: fileUrl.trim() });
-    } else {
-      throw new Error(fileUrl || 'Falha no upload da imagem para o servidor de arquivos');
-    }
+    const fileUrl = await uploadToCloud(buffer);
+    res.json({ success: true, url: fileUrl });
   } catch (err) {
     console.error('Erro no upload de imagem:', err);
     res.status(500).json({ error: 'Erro ao hospedar imagem: ' + err.message });
