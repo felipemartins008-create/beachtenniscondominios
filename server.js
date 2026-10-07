@@ -60,28 +60,36 @@ function generateSlug(text) {
 
 // API: Criar novo condomínio (com suporte a imagem personalizada)
 app.post('/api/condominios', (req, res) => {
-  const { nome, whatsappLink, cidade, quadra, descricao, imageBase64 } = req.body;
-  if (!nome || !whatsappLink) {
-    return res.status(400).json({ error: 'Nome e Link do WhatsApp são obrigatórios' });
-  }
+  try {
+    if (process.env.VERCEL) {
+      return res.status(400).json({ 
+        error: 'Para cadastrar condomínios e subir imagens, acesse o painel no seu computador em http://localhost:3333 e clique em Sincronizar com a Vercel!' 
+      });
+    }
 
-  const condominios = getCondominios();
-  let slug = generateSlug(nome);
+    const { nome, whatsappLink, cidade, quadra, descricao, imageBase64 } = req.body;
+    if (!nome || !whatsappLink) {
+      return res.status(400).json({ error: 'Nome e Link do WhatsApp são obrigatórios' });
+    }
 
-  // Avoid duplicate slugs
-  let count = 1;
-  let finalSlug = slug;
-  while (condominios.some(c => c.slug === finalSlug)) {
-    finalSlug = `${slug}-${count++}`;
-  }
+    const condominios = getCondominios();
+    let slug = generateSlug(nome);
 
-  // Handle custom image upload if provided
-  let bannerUrl = '/assets/banner-beach-tennis.jpg';
-  if (imageBase64) {
-    try {
-      const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      if (matches && matches.length === 3) {
-        const buffer = Buffer.from(matches[2], 'base64');
+    // Avoid duplicate slugs
+    let count = 1;
+    let finalSlug = slug;
+    while (condominios.some(c => c.slug === finalSlug)) {
+      finalSlug = `${slug}-${count++}`;
+    }
+
+    // Handle custom image upload if provided
+    let bannerUrl = '/assets/banner-beach-tennis.jpg';
+    if (imageBase64 && typeof imageBase64 === 'string') {
+      try {
+        const base64Data = imageBase64.includes('base64,')
+          ? imageBase64.split('base64,')[1]
+          : imageBase64;
+        const buffer = Buffer.from(base64Data, 'base64');
         const fileName = `banner-${finalSlug}.jpg`;
         const assetsDir = path.join(__dirname, 'public', 'assets');
         if (!fs.existsSync(assetsDir)) {
@@ -89,33 +97,36 @@ app.post('/api/condominios', (req, res) => {
         }
         fs.writeFileSync(path.join(assetsDir, fileName), buffer);
         bannerUrl = `/assets/${fileName}`;
+      } catch (err) {
+        console.error('Erro ao salvar imagem customizada:', err);
       }
-    } catch (err) {
-      console.error('Erro ao salvar imagem customizada:', err);
     }
+
+    const novo = {
+      id: Date.now().toString(),
+      slug: finalSlug,
+      nome: nome.trim(),
+      cidade: cidade ? cidade.trim() : 'Condomínio',
+      quadra: quadra ? quadra.trim() : 'Quadra de Areia',
+      whatsappLink: whatsappLink.trim(),
+      bannerUrl: bannerUrl,
+      descricao: descricao ? descricao.trim() : `Turmas para iniciantes, intermediários, adultos e crianças. Aprenda ou evolua seu jogo sem sair de casa!`,
+      beneficios: [
+        'Aulas práticas na quadra do seu condomínio',
+        'Horários flexíveis (manhã, tarde e noite)',
+        'Material fornecido pelo professor (raquetes e bolinhas)',
+        'Turmas divididas por nível e idade'
+      ]
+    };
+
+    condominios.unshift(novo);
+    saveCondominios(condominios);
+
+    res.json({ success: true, item: novo });
+  } catch (err) {
+    console.error('Erro ao cadastrar condomínio:', err);
+    res.status(500).json({ error: 'Erro interno ao salvar: ' + err.message });
   }
-
-  const novo = {
-    id: Date.now().toString(),
-    slug: finalSlug,
-    nome: nome.trim(),
-    cidade: cidade ? cidade.trim() : 'Condomínio',
-    quadra: quadra ? quadra.trim() : 'Quadra de Areia',
-    whatsappLink: whatsappLink.trim(),
-    bannerUrl: bannerUrl,
-    descricao: descricao ? descricao.trim() : `Turmas para iniciantes, intermediários, adultos e crianças. Aprenda ou evolua seu jogo sem sair de casa!`,
-    beneficios: [
-      'Aulas práticas na quadra do seu condomínio',
-      'Horários flexíveis (manhã, tarde e noite)',
-      'Material fornecido pelo professor (raquetes e bolinhas)',
-      'Turmas divididas por nível e idade'
-    ]
-  };
-
-  condominios.unshift(novo);
-  saveCondominios(condominios);
-
-  res.json({ success: true, item: novo });
 });
 
 // API: Publicar/Sincronizar com o GitHub / Vercel com 1 clique

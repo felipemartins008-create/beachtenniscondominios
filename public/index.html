@@ -382,8 +382,18 @@
       <h1>Gerador de Links com Imagem Automática</h1>
       <p class="subtitle">
         Crie links exclusivos para cada condomínio. Quando você colar no WhatsApp, a imagem de capa e os detalhes carregam automaticamente na hora!
-      </p>
     </header>
+
+    <div id="vercelAlertBanner" style="display: none; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); border-radius: 14px; padding: 16px 20px; margin-bottom: 24px; text-align: left;">
+      <div style="font-weight: 700; color: #fb923c; margin-bottom: 4px; font-size: 15px;">
+        ⚠️ Você está acessando pelo link da Vercel (Modo Leitura)
+      </div>
+      <div style="font-size: 13.5px; color: #e2e8f0; line-height: 1.4;">
+        Para cadastrar novos condomínios e subir suas fotos do Canva, abra o painel no seu computador em: 
+        <a href="http://localhost:3333" style="color: #38bdf8; font-weight: 700; text-decoration: underline;">http://localhost:3333</a>.<br>
+        Lá o seu computador salva os arquivos e envia para a Vercel com 1 clique no botão "Sincronizar"!
+      </div>
+    </div>
 
     <div class="grid">
       <!-- Formulário: Adicionar Novo Condomínio -->
@@ -662,8 +672,19 @@
       }
     };
 
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      const banner = document.getElementById('vercelAlertBanner');
+      if (banner) banner.style.display = 'block';
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        alert('⚠️ ATENÇÃO: Para cadastrar novos condomínios e fazer upload de fotos, abra o painel no seu computador em http://localhost:3333.\n\nNa Vercel o site fica em modo somente leitura. Depois de cadastrar no seu computador, basta clicar em "Sincronizar com a Vercel"!');
+        return;
+      }
+
       const nome = document.getElementById('nome').value;
       const whatsappLink = document.getElementById('whatsappLink').value;
       const cidade = document.getElementById('cidade').value;
