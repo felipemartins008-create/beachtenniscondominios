@@ -152,51 +152,28 @@ app.delete('/api/condominios/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// API: Upload de imagem para nuvem com fallback automático (x0.at, Catbox, Uguu)
+// API: Upload de imagem para nuvem com Imgur CDN ultra-rápido e permanente
 async function uploadToCloud(buffer) {
-  // Provedor 1: x0.at (Rápido, sem bloqueio de IP de nuvem/Vercel)
-  try {
-    const fd = new FormData();
-    fd.append('file', new Blob([buffer], { type: 'image/jpeg' }), 'banner.jpg');
-    const res = await fetch('https://x0.at/', {
-      method: 'POST',
-      body: fd,
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-    });
-    const url = (await res.text()).trim();
-    if (url.startsWith('http')) return url;
-  } catch (err) {
-    console.warn('Provedor x0.at falhou, tentando próximo...', err.message);
-  }
+  const base64Data = buffer.toString('base64');
+  const clientIds = ['546c25a59c58ad7', 'e1ff1b53c613e51', '28eb2e1f1634699'];
 
-  // Provedor 2: Catbox com headers completos de navegador
-  try {
-    const fd = new FormData();
-    fd.append('reqtype', 'fileupload');
-    fd.append('fileToUpload', new Blob([buffer], { type: 'image/jpeg' }), 'banner.jpg');
-    const res = await fetch('https://catbox.moe/user/api.php', {
-      method: 'POST',
-      body: fd,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Referer': 'https://catbox.moe/'
+  for (const clientId of clientIds) {
+    try {
+      const res = await fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Client-ID ${clientId}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image: base64Data, type: 'base64' })
+      });
+      const json = await res.json();
+      if (json.success && json.data?.link) {
+        return json.data.link.replace('http://', 'https://');
       }
-    });
-    const url = (await res.text()).trim();
-    if (url.startsWith('http')) return url;
-  } catch (err) {
-    console.warn('Provedor catbox falhou, tentando próximo...', err.message);
-  }
-
-  // Provedor 3: Uguu.se
-  try {
-    const fd = new FormData();
-    fd.append('files[]', new Blob([buffer], { type: 'image/jpeg' }), 'banner.jpg');
-    const res = await fetch('https://uguu.se/upload.php', { method: 'POST', body: fd });
-    const json = await res.json();
-    if (json.success && json.files?.[0]?.url) return json.files[0].url;
-  } catch (err) {
-    console.warn('Provedor uguu falhou:', err.message);
+    } catch (err) {
+      console.warn(`Imgur ${clientId} falhou:`, err.message);
+    }
   }
 
   throw new Error('Não foi possível hospedar a imagem no momento. Tente novamente em alguns segundos.');
